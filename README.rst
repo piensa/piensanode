@@ -8,7 +8,7 @@ Installation
 
 Install geonode with::
 
-    $ sudo add-apt-repository ppa:geonode/testing
+    $ sudo add-apt-repository ppa:geonode/stable
 
     $ sudo apt-get update
 
