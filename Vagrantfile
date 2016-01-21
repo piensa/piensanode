@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant.configure("2") do |config|
-  config.vm.box = "trusty64server"
+  config.vm.box = "ubuntu/trusty64"
   config.ssh.username = 'vagrant'
 
   config.vm.define :production do |production|
