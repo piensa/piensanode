@@ -27,10 +27,37 @@ Install and Configure GeoServer
 
 .. note:: At this point, you should put your project under version control using Git or similar.
 
-If you are using Vagrant, setup your vagrant environment::
+Using ansible for Automated Deploys
+-----------------------------------
 
-    $ cd my_geonode
+In order to install for production on a remote machine or to a local VM for development, you will need to install ansible::
+
+     $ sudo pip install ansible
+
+Note: It is advisable to install ansible system wide using sudo
+
+Next, you will need to install the ansible role for geonode::
+
+     $ ansible-galaxy install ortelius.geonode
+
+Setting up a vagrant box
+-------------------------
+
+Setup your virtual machine with::
+
     $ vagrant up
+
+Usage in production
+-------------------
+
+Update /etc/ansible/hosts to include your webservers host or dns entry::
+
+    [webservers]
+    ###.###.###.###
+
+Then you can run the playbook to install the {{ project_name }}  project::
+
+    $ ansible-playbook playbook.yml
 
 Usage
 -----
