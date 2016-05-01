@@ -11,7 +11,7 @@ Install the native dependencies for your platform.
 Create a local virtual environment for your project and install Django into it.::
 
     $ mkvirtualenv my_geonode
-    $ pip install Django
+    $ pip install Django==1.8.12
 
 Create a new template based on the geonode example project.::
     
