@@ -8,7 +8,7 @@ Installation
 
 Install the native dependencies for your platform.
 
-Create a local virtual environment for your project and install Django into it.::
+Install virtualenv and virtualenvwrapper, Create a local virtual environment for your project and install Django into it.::
 
     $ mkvirtualenv my_geonode
     $ pip install Django==1.8.12
@@ -19,7 +19,7 @@ Create a new template based on the geonode example project.::
 
 .. note:: You should NOT use the name geonode for your project as it will conflict with the default geonode package name.
 
-Install the dependencies for your geonode project::
+Install the dependencies for your geonode project into your local virtual environment::
 
     $ pip install -e my_geonode
 
@@ -43,9 +43,11 @@ Next, you will need to install the ansible role for geonode::
 Setting up a vagrant box
 -------------------------
 
-Setup your virtual machine with::
+Setup VirtualBox and install vagrant, then setup your virtual machine with::
 
     $ vagrant up
+
+Note: the vagrant installation uses Ansible, so you will need to follow the steps in the previous section.
 
 Usage in production
 -------------------
@@ -59,8 +61,8 @@ Then you can run the playbook to install the {{ project_name }}  project::
 
     $ ansible-playbook playbook.yml
 
-Usage
------
+Basic Usage
+-----------
 
 Setup the database::
 
