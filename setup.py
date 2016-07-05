@@ -5,11 +5,11 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(
-    name="{{ project_name }}",
+    name="piensanode",
     version="0.2",
     author="",
     author_email="",
-    description="{{ project_name }}, based on GeoNode",
+    description="piensanode, based on GeoNode",
     long_description=(read('README.rst')),
     # Full list of classifiers can be found at:
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -17,9 +17,9 @@ setup(
         'Development Status :: 1 - Planning',
     ],
     license="BSD",
-    keywords="{{ project_name }} geonode django",
-    url='https://github.com/{{ project_name }}/{{ project_name }}',
-    packages=['{{ project_name }}',],
+    keywords="piensanode geonode django",
+    url='https://github.com/piensa/piensanode',
+    packages=['piensanode',],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
