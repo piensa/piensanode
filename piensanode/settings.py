@@ -26,14 +26,14 @@ from geonode.settings import *
 # General Django development settings
 #
 
-SITENAME = '{{ project_name }}'
+SITENAME = 'piensanode'
 
 # Defines the directory that contains the settings file as the LOCAL_ROOT
 # It is used for relative settings elsewhere.
 GEONODE_ROOT = os.path.abspath(os.path.abspath(geonode.__file__))
 LOCAL_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-WSGI_APPLICATION = "{{ project_name }}.wsgi.application"
+WSGI_APPLICATION = "piensanode.wsgi.application"
 
 
 # Load more settings from a file called local_settings.py if it exists
@@ -54,7 +54,7 @@ TEMPLATE_DIRS = (
 ) + TEMPLATE_DIRS
 
 # Location of url mappings
-ROOT_URLCONF = '{{ project_name }}.urls'
+ROOT_URLCONF = 'piensanode.urls'
 
 # Location of locale files
 LOCALE_PATHS = (
