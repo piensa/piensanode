@@ -139,13 +139,12 @@
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
 
-- name: Create superuser
+- name: Create or update superuser
   shell: >
     PYTHONPATH=. DJANGO_SETTINGS_MODULE={{main_module}}.settings
     {{virtualenv_dir}}/{{app_name}}/bin/python -c
-    "from geonode.people.models import Profile; Profile.objects.create_superuser('admin', 'admin@geonode.org', 'admin')"
+    "from geonode.people.models import Profile; Profile.objects.get_or_create(username='admin', password='admin')"
     chdir={{app_code_dir}}/{{app_name}}/{{main_module}}
-  ignore_errors: yes    
 
 - name: wait for geoserver to be up
   shell: curl --head --silent http://localhost:8080/geoserver/web/
@@ -158,4 +157,4 @@
   template: src=create_db_store.py.j2 dest={{ app_code_dir}}/{{app_name}}/create_db_store.py
 
 - name: create the db datastore in geoserver
-  command: "{{virtualenv_dir}}/{{app_name}}/bin/python {{ app_code_dir}}/{{app_name}}/create_db_store.py" 
+  command: "{{virtualenv_dir}}/{{app_name}}/bin/python {{ app_code_dir}}/{{app_name}}/create_db_store.py"
