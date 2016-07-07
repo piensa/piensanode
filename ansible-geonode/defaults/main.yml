@@ -9,6 +9,7 @@ app_name: my_geonode
 
 # github user who owns the repository
 github_user: jj0hns0n
+git_branch: master
 
 # remote git repository to pull application code from, for example:
 code_repository: "https://github.com/{{ github_user }}/{{ app_name }}.git"
