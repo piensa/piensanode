@@ -18,7 +18,6 @@ Vagrant.configure("2") do |config|
         ansible.sudo = true
         ansible_inventory_path = "inventory.ini"
         ansible.playbook = "playbook.yml"
-        ansible.verbose = "vvv"
     end
     config.vm.network :private_network, ip: "192.168.56.151"
   end

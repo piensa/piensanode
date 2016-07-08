@@ -61,6 +61,10 @@
   shell: virtualenv --system-site-packages {{virtualenv_dir}}/{{app_name}}
   when: venv_dir.stat.isdir is not defined
 
+- name: Give user permissions to virtualenv folder.
+  file: path={{virtualenv_dir}}/{{app_name}} state=directory owner={{deploy_user}} group={{deploy_user}}
+  when: venv_dir.stat.isdir is not defined
+
 - name: check if requirements file exists
   stat: path={{app_code_dir}}/{{app_name}}/requirements.txt
   register: requirements_file
@@ -134,8 +138,21 @@
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
 
-- name: Django syncdb
-  django_manage: command=syncdb
+- name: Django makemigrations
+  django_manage: command=makemigrations
+                 app_path={{app_code_dir}}/{{app_name}}
+                 virtualenv={{virtualenv_dir}}/{{app_name}}
+                 settings={{main_module}}.settings
+
+
+- name: Django migrate account
+  django_manage: command=migrate account
+                 app_path={{app_code_dir}}/{{app_name}}
+                 virtualenv={{virtualenv_dir}}/{{app_name}}
+                 settings={{main_module}}.settings
+
+- name: Django migrate
+  django_manage: command=migrate
                  app_path={{app_code_dir}}/{{app_name}}
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
