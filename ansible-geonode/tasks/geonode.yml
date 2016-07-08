@@ -156,9 +156,12 @@
   until: result.stdout.find('200 OK') != -1
   retries: 5 
   delay: 60
+  when: geoserver
 
 - name: Copy create_db_store script in place
   template: src=create_db_store.py.j2 dest={{ app_code_dir}}/{{app_name}}/create_db_store.py
+  when: geoserver
 
 - name: create the db datastore in geoserver
   command: "{{virtualenv_dir}}/{{app_name}}/bin/python {{ app_code_dir}}/{{app_name}}/create_db_store.py"
+  when: geoserver
