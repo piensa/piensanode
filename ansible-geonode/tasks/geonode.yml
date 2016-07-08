@@ -61,11 +61,11 @@
   when: venv_dir.stat.isdir is not defined
 
 - name: check if requirements file exists
-  stat: path={{app_code_dir}}/{{app_name}}/shared/requirements.txt
+  stat: path={{app_code_dir}}/{{app_name}}/requirements.txt
   register: requirements_file
 
 - name: install web application dependencies listed in requirements.txt
-  pip: requirements={{app_code_dir}}/{{app_name}}/shared/requirements.txt virtualenv={{virtualenv_dir}}/{{app_name}}
+  pip: requirements={{app_code_dir}}/{{app_name}}/requirements.txt virtualenv={{virtualenv_dir}}/{{app_name}}
   when: requirements_file.stat.exists
 
 - name: install web application
@@ -139,12 +139,15 @@
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
 
-- name: Create or update superuser
-  shell: >
-    PYTHONPATH=. DJANGO_SETTINGS_MODULE={{main_module}}.settings
-    {{virtualenv_dir}}/{{app_name}}/bin/python -c
-    "from geonode.people.models import Profile; Profile.objects.get_or_create(username='admin', password='admin', is_superuser=True)"
-    chdir={{app_code_dir}}/{{app_name}}/{{main_module}}
+- name: Copy initial fixtures in place 
+  template: src=fixtures.json.j2 dest={{ app_code_dir}}/{{app_name}}/fixtures.json
+ 
+- name: Load the fixtures (Create the superuser)
+  django_manage: command="loaddata" 
+                 app_path={{app_code_dir}}/{{app_name}}
+                 virtualenv={{virtualenv_dir}}/{{app_name}}
+                 settings={{main_module}}.settings
+                 fixtures={{ app_code_dir}}/{{app_name}}/fixtures.json
 
 - name: wait for geoserver to be up
   shell: curl --head --silent http://localhost:8080/geoserver/web/
