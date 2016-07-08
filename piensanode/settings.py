@@ -56,8 +56,14 @@ TEMPLATE_DIRS = (
 # Location of url mappings
 ROOT_URLCONF = 'piensanode.urls'
 
+INSTALLED_APPS = ('hypermap.aggregator',
+                   'hypermap.search',
+                   'hypermap.dynasty',
+                   'maploom',
+                   'maploom_registry',
+) + INSTALLED_APPS
+
 # Location of locale files
 LOCALE_PATHS = (
     os.path.join(LOCAL_ROOT, 'locale'),
     ) + LOCALE_PATHS
-
