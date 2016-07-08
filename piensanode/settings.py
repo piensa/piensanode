@@ -57,7 +57,6 @@ TEMPLATE_DIRS = (
 ROOT_URLCONF = 'piensanode.urls'
 
 INSTALLED_APPS = (
-    'haystack',
     'hypermap',
     'hypermap.aggregator',
     'hypermap.search',
