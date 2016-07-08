@@ -146,13 +146,13 @@
 
 
 - name: Django migrate account
-  django_manage: command=migrate account
+  django_manage: command="migrate account"
                  app_path={{app_code_dir}}/{{app_name}}
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
 
 - name: Django migrate
-  django_manage: command=migrate
+  django_manage: command="migrate"
                  app_path={{app_code_dir}}/{{app_name}}
                  virtualenv={{virtualenv_dir}}/{{app_name}}
                  settings={{main_module}}.settings
