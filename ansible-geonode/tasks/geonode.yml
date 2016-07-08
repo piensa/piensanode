@@ -41,6 +41,7 @@
     - libjpeg-dev
     - libpng-dev
     - libxslt-dev
+    - rabbitmq-server
 
 
 - name: install known_hosts file to access GitHub
