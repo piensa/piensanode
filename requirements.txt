@@ -1,0 +1,4 @@
+-e git://github.com/terranodo/django-mapproxy@registry#egg=django-mapproxy
+-e git://github.com/terranodo/mapproxy@imageserver#egg=mapproxy
+-e git://github.com/terranodo/django-maploom.git@registry#egg=django-maploom-registry
+-e git://github.com/cga-harvard/hhypermap.git@registry#egg=django-registry
