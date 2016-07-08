@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :production do |production|
     production.vm.network :public_network, :bridge => 'eth0', :auto_config => false
-    config.vm.network "forwarded_port", guest: 80, host: 8000
+    config.vm.network "forwarded_port", guest: 8000, host: 8000
     production.vm.provider :virtualbox do |vb|
         vb.customize [ "modifyvm", :id, "--name", "piensanode-prod","--memory", 4096 ]
     end
