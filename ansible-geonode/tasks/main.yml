@@ -3,4 +3,5 @@
 
 - include: postgres_postgis.yml
 - include: geoserver.yml
+  when: geoserver
 - include: web.yml

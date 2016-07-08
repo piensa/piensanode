@@ -5,5 +5,6 @@
     github_user: piensa
     server_name: 192.168.56.151
     deploy_user: vagrant
+    geoserver: False
   roles:
      - { role: ansible-geonode }
