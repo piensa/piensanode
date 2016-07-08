@@ -22,11 +22,19 @@
 import os
 import geonode
 from geonode.settings import *
+from datetime import timedelta
 #
 # General Django development settings
 #
 
 SITENAME = 'piensanode'
+BASE_URL = os.getenv('BASE_URL', '192.168.56.151')
+BASE_PORT = os.getenv('PORT', '8500')
+
+SITE_URL = 'http://%s:%s' % (BASE_URL, BASE_PORT)
+
+ALLOWED_HOSTS = [BASE_URL, ]
+
 
 # Defines the directory that contains the settings file as the LOCAL_ROOT
 # It is used for relative settings elsewhere.
@@ -78,25 +86,14 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-# haystack settings
-ES_ENGINE = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
-ES_URL = 'http://127.0.0.1:9200/'
-
-SEARCH_URL = ES_URL
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': ES_ENGINE,
-        'URL': ES_URL,
-        'INDEX_NAME': 'hypermap',
-    },
-}
-
 # amqp settings
 BROKER_URL = os.getenv('BROKER_URL', 'amqp://guest:guest@127.0.0.1:5672/')
 CELERY_ALWAYS_EAGER = False
+CELERY_DEFAULT_EXCHANGE = 'hypermap'
 NOTIFICATION_QUEUE_ALL = not CELERY_ALWAYS_EAGER
 NOTIFICATION_LOCK_LOCATION = LOCAL_ROOT
 
 SEARCH_TYPE = 'elasticsearch'
-SEARCH_URL = ES_URL
+SEARCH_URL = 'http://127.0.0.1:9200/'
 SEARCH_ENABLED = True
+SKIP_CELERY_TASK = False

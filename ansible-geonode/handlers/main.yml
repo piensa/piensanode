@@ -1,5 +1,9 @@
 ---
 # handlers file for ansible-geonode
+- name: restart elasticsearch
+  service: name=elasticsearch state=restarted
+  sudo: yes
+
 - name: restart rabbitmq
   service: name=rabbitmq-server state=restarted
   sudo: yes
