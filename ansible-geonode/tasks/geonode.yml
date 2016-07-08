@@ -48,6 +48,7 @@
 
 - name: checkout latest web app code
   git: repo={{code_repository}} version={{git_branch}} dest={{app_code_dir}}/{{app_name}}
+  when: git_fetch
 
 - name: copy the local_settings.py file in place
   template: src=local_settings.py.j2 dest={{ app_code_dir}}/{{app_name}}/{{ app_name}}/local_settings.py
