@@ -56,11 +56,13 @@ TEMPLATE_DIRS = (
 # Location of url mappings
 ROOT_URLCONF = 'piensanode.urls'
 
-INSTALLED_APPS = ('hypermap',
-                   'hypermap.aggregator',
-                   'hypermap.search',
-                   'hypermap.dynasty',
-                   'maploom_registry',
+INSTALLED_APPS = (
+    'haystack',
+    'hypermap',
+    'hypermap.aggregator',
+    'hypermap.search',
+    'hypermap.dynasty',
+    'maploom_registry',
 ) + INSTALLED_APPS
 
 # Location of locale files
@@ -69,3 +71,33 @@ LOCALE_PATHS = (
     ) + LOCALE_PATHS
 
 BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672/'
+
+CELERYBEAT_SCHEDULE = {
+    'Check All Services': {
+        'task': 'hypermap.aggregator.tasks.check_all_services',
+        'schedule': timedelta(minutes=15)
+    },
+}
+
+# haystack settings
+ES_ENGINE = 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine'
+ES_URL = 'http://127.0.0.1:9200/'
+
+SEARCH_URL = ES_URL
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': ES_ENGINE,
+        'URL': ES_URL,
+        'INDEX_NAME': 'hypermap',
+    },
+}
+
+# amqp settings
+BROKER_URL = os.getenv('BROKER_URL', 'amqp://guest:guest@127.0.0.1:5672/')
+CELERY_ALWAYS_EAGER = False
+NOTIFICATION_QUEUE_ALL = not CELERY_ALWAYS_EAGER
+NOTIFICATION_LOCK_LOCATION = LOCAL_ROOT
+
+SEARCH_TYPE = 'elasticsearch'
+SEARCH_URL = ES_URL
+SEARCH_ENABLED = True
