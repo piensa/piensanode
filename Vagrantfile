@@ -19,7 +19,8 @@ Vagrant.configure("2") do |config|
         ansible_inventory_path = "inventory.ini"
         ansible.playbook = "playbook.yml"
     end
-    config.vm.network :private_network, ip: "192.168.56.151"
+    config.vm.network :private_network, ip: "192.168.56.151"   
+    config.vm.provision :shell, :inline => "sudo service uwsgi restart", run: "always"
   end
 
 end
