@@ -37,7 +37,6 @@
     - libgeos-dev
     - libproj-dev
     - unzip
-    - uwsgi
     - zip
     - libjpeg-dev
     - libpng-dev

@@ -15,6 +15,7 @@ logto = /var/log/nginx/uwsgi-%n.log
 
 chdir = {{app_code_dir}}/%n
 module = django.core.wsgi:get_wsgi_application()
+env = DJANGO_SETTINGS_MODULE={{app_name}}.settings
 
 ;enable-threads = true
 

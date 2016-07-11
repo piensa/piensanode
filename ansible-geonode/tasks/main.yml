@@ -4,5 +4,5 @@
 - include: postgres_postgis.yml
 - include: geoserver.yml
   when: geoserver
-- include: celery.yml
 - include: web.yml
+- include: celery.yml
