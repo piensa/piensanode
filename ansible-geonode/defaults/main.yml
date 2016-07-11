@@ -88,4 +88,4 @@ celery_template_file: "{{ celery_application_name }}_start.j2"
 
 celery_log_dir: "/var/log/celery"
 celery_log_file: "{{ celery_log_dir }}/{{ celery_application_name }}.log"
-celery_num_workers: 1
+celery_num_workers: 4

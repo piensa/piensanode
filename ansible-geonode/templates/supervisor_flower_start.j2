@@ -8,4 +8,4 @@ cd $DJANGODIR
 
 # Programs meant to be run under supervisor should not daemonize themselves
 # (do not use --daemon).
-exec celery worker --app={{app_name}}.celeryapp:app -B -l INFO -c {{celery_num_workers}}
+exec flower --port=5555
