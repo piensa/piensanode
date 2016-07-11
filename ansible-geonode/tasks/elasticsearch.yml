@@ -3,11 +3,12 @@
   sudo: yes
 
 - name: Import Elastic GPG Key
-  apt_key: url=http://packages.elastic.co/GPG-KEY-elasticsearch state=present
+  shell: "wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -"
+  sudo: yes
   tags: [elasticsearch]
 
 - name: add elasticsearch repository
-  apt_repository: repo='deb http://packages.elastic.co/elasticsearch/{{es_version}}/debian stable main' state=present
+  apt_repository: repo='deb https://packages.elastic.co/elasticsearch/{{ es_version }}/debian stable main' state=present
   tags: [elasticsearch]
 
 - name: add add-apt-repostory
@@ -30,14 +31,9 @@
   sudo: yes
   tags: [elasticsearch]
 
-- name: install java8
+- name: install java8 certificates
   apt: name=ca-certificates state=present update_cache=yes cache_valid_time=7200
   sudo: yes
-  tags: [elasticsearch]
-
-- name: install java version from elasticsearch role
-  apt: name={{ es_java_version }} state=present update_cache=yes cache_valid_time=7200
-  when: es_install_java
   tags: [elasticsearch]
 
 - name: install elasticsearch
