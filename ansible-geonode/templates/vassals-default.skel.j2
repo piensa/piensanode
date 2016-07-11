@@ -13,14 +13,13 @@ vacuum = true
 ; project-level logging to the logs/ folder
 logto = /var/log/nginx/uwsgi-%n.log
 
-home = {{app_code_dir}}/%n
+chdir = {{app_code_dir}}/%n
 module = django.core.wsgi:get_wsgi_application()
 
 ;enable-threads = true
 
 virtualenv = {{virtualenv_dir}}/%n
 vacuum = true
-env = DJANGO_SETTINGS_MODULE={{main_module}}.settings
 pidfile = /tmp/%n.pid
 ;harakiri = 20 # respawn processes taking more than 20 seconds
 max-requests = 5000 # respawn processes after serving 5000 requests

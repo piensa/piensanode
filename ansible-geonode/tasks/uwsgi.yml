@@ -10,10 +10,6 @@
     - python-dev
     - python-pip
 
-- name: add uwsgi from pypi
-  pip: name=uwsgi
-  sudo: yes
-
 - name: create /etc/uwsgi to place apps
   file: path=/etc/uwsgi owner=www-data group=www-data state=directory mode=0755
   sudo: yes
