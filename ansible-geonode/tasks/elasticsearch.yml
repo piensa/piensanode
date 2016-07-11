@@ -21,20 +21,18 @@
   sudo: yes
   tags: [elasticsearch]
 
+- name: update
+  shell: apt-get update
+  sudo: yes
+
 - name: auto accept oracle jdk license
   shell: echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
   sudo: yes
   tags: [elasticsearch]
 
 - name: install java8
-  apt: name=oracle-java8-installer state=present update_cache=yes cache_valid_time=7200
+  shell: apt-get install -y oracle-java8-installer ca-certificates
   sudo: yes
-  tags: [elasticsearch]
-
-- name: install java8 certificates
-  apt: name=ca-certificates state=present update_cache=yes cache_valid_time=7200
-  sudo: yes
-  tags: [elasticsearch]
 
 - name: install elasticsearch
   apt: name=elasticsearch state=present update_cache=yes cache_valid_time=7200
