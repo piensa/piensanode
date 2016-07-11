@@ -1,8 +1,17 @@
+upstream elastic {
+    server localhost:9200;
+}
+
 server {
     listen      80;
     server_name {{ server_name }};
 
     charset     utf-8;
+
+    location /elastic {
+       proxy_pass http://elastic;
+       rewrite ^/elastic/(.*) /$1 break;
+    }
 
     access_log /var/log/nginx/{{ app_name }}.access.log;
     error_log /var/log/nginx/{{ app_name }}.error.log info;
