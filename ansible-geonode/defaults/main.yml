@@ -64,9 +64,9 @@ geoserver_url: http://build.geonode.org/geoserver/latest/geoserver.war
 
 # Elasticsearch version from debian repository
 
-es_version: 1.6
+es_version: 2.3
 es_install_java: True
-es_java_version: 'openjdk-7-jdk'
+es_java_version: 'openjdk-8-jdk'
 es_heap_size: '500mb'
 es_fqdn: localhost
 es_port: 9200

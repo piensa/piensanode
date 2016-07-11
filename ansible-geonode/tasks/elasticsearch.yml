@@ -2,12 +2,37 @@
   apt: name=supervisor
   sudo: yes
 
-- name: adding elasticsearch gpg key
-  apt_key: url=http://packages.elasticsearch.org/GPG-KEY-elasticsearch state=present
+- name: Import Elastic GPG Key
+  apt_key: url=http://packages.elastic.co/GPG-KEY-elasticsearch state=present
   tags: [elasticsearch]
 
 - name: add elasticsearch repository
-  apt_repository: repo='deb http://packages.elasticsearch.org/elasticsearch/{{es_version}}/debian stable main' state=present
+  apt_repository: repo='deb http://packages.elastic.co/elasticsearch/{{es_version}}/debian stable main' state=present
+  tags: [elasticsearch]
+
+- name: add add-apt-repostory
+  apt: pkg=software-properties-common state=present update_cache=yes  cache_valid_time=7200
+  sudo: yes 
+  tags: [elasticsearch]
+
+- name: add webupd8 ppa
+  apt_repository: repo='ppa:webupd8team/java'
+  sudo: yes
+  tags: [elasticsearch]
+
+- name: auto accept oracle jdk license
+  shell: echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+  sudo: yes
+  tags: [elasticsearch]
+
+- name: install java8
+  apt: name=oracle-java8-installer state=present update_cache=yes cache_valid_time=7200
+  sudo: yes
+  tags: [elasticsearch]
+
+- name: install java8
+  apt: name=ca-certificates state=present update_cache=yes cache_valid_time=7200
+  sudo: yes
   tags: [elasticsearch]
 
 - name: install java version from elasticsearch role
