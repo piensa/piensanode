@@ -10,7 +10,7 @@ server {
 
     location /elastic {
        proxy_pass http://elastic;
-       rewrite ^/elastic/(.*) /$1 break;
+       rewrite ^/elastic(.*) /$1 break;
     }
 
     access_log /var/log/nginx/{{ app_name }}.access.log;
