@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   config.ssh.username = 'vagrant'
 
-  config.vm.synced_folder ".", "/srv/git/piensanode", mount_options: ["dmode=777,fmode=777"]
+  config.vm.synced_folder "../", "/code", mount_options: ["dmode=777,fmode=777"]
 
   config.vm.define :production do |production|
     production.vm.network :public_network, :bridge => 'eth0', :auto_config => false

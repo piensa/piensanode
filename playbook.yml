@@ -7,6 +7,6 @@
     deploy_user: vagrant
     geoserver: False
     git_fetch: False
-    app_code_dir: /srv/git
+    app_code_dir: /code
   roles:
      - { role: ansible-geonode }
