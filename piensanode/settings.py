@@ -70,6 +70,7 @@ INSTALLED_APPS = (
     'hypermap.search',
     'hypermap.dynasty',
     'maploom_registry',
+    'rest_framework',
 ) + INSTALLED_APPS
 
 # Location of locale files
