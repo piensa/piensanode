@@ -67,7 +67,7 @@
   register: requirements_file
 
 - name: install web application dependencies listed in requirements.txt
-  pip: requirements={{app_code_dir}}/{{app_name}}/requirements.txt virtualenv={{virtualenv_dir}}/{{app_name}} state=latest
+  pip: requirements={{app_code_dir}}/{{app_name}}/requirements.txt virtualenv={{virtualenv_dir}}/{{app_name}}
   when: requirements_file.stat.exists
 
 - name: install web application
