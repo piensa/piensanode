@@ -69,6 +69,7 @@ INSTALLED_APPS = (
     'hypermap.aggregator',
     'hypermap.search',
     'hypermap.dynasty',
+    'hypermap.search_api',    
     'maploom_registry',
     'rest_framework',
 ) + INSTALLED_APPS
