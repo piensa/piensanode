@@ -15,3 +15,7 @@
   sudo: yes
   notify:
     - restart nginx
+
+- name: start nginx
+  service: name=nginx state=started
+  sudo: yes    
