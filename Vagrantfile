@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
     end
     config.vm.network :private_network, ip: "192.168.56.151"   
     config.vm.provision :shell, :inline => "sudo service uwsgi restart", run: "always"
+    config.vm.provision :shell, :inline => "sudo service nginx restart", run: "always"
   end
 
 end
