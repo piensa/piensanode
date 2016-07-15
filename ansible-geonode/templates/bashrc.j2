@@ -1,4 +1,3 @@
-sudo -i
 source /home/{{deploy_user}}/venvs/{{ app_name }}/bin/activate
 cd {{app_code_dir}}/{{app_name}}
 alias celerylog='tail -f /var/log/celery/*'
