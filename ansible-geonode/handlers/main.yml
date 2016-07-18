@@ -22,10 +22,5 @@
   service: 
     name: elasticsearch 
     state: restarted
-  sudo: yes
-
-- name: Restart supervisor
-  service: 
-    name: supervisor 
-    state: restarted
+    enabled: yes
   sudo: yes

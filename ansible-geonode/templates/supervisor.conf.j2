@@ -21,15 +21,6 @@ autorestart=true
 redirect_stderr=true
 priority=1
 
-[program:elasticsearch]
-command=/usr/share/elasticsearch/bin/elasticsearch
-autostart=true
-autorestart=true
-stdout_logfile={{ logs_dir }}/elasticsearch.log
-stderr_logfile={{ logs_dir }}/elasticsearch.log
-user=elasticsearch
-redirect_stderr=true
-priority=1
 
 [program:{{ app_name }}-celery]
 command={{ virtualenv_dir }}/{{ app_name }}/bin/celery worker
