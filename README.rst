@@ -13,3 +13,7 @@ Piensanode
 
     vagrant up
 
+3. Access the server on:
+
+    http://192.168.56.151/
+    
