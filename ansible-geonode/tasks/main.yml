@@ -7,7 +7,6 @@
   apt: 
     name: "{{ item }}" 
     update_cache: yes 
-    cache_valid_time: 7200
   with_items:
     - build-essential
     - gdal-bin
@@ -159,7 +158,6 @@
     pkg             : tomcat7
     state           : present 
     update_cache    : yes 
-    cache_valid_time: 7200
   sudo: yes
   when: geoserver
   tags: geoserver
@@ -348,7 +346,6 @@
   apt: 
     name            : nginx 
     update_cache    : yes 
-    cache_valid_time: 7200
   sudo: yes
   tags: nginx
 
