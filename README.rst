@@ -15,9 +15,9 @@ Piensanode
 
 3. If you are working on HHyperMap, install it from source inside the virtual machine:
 
-   vagrant ssh
-   source venvs/piensanode/bin/activate
-   pip install -e /code/HHyperMap
+    vagrant ssh
+    source venvs/piensanode/bin/activate
+    pip install -e /code/HHyperMap
 
 4. Access the server on:
 
