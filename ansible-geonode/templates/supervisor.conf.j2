@@ -4,8 +4,7 @@ command=/usr/local/bin/uwsgi
 	--die-on-term
 	--uid=www-data
 	--gid=www-data
-	--socket=/tmp/{{ app_name }}.sock
-	--chmod-socket=666
+        --http=:8000
 	--chdir={{ app_code_dir }}/{{ app_name }}
 	--home={{ virtualenv_dir }}/{{ app_name }}
 	--module=django.core.wsgi:get_wsgi_application()
