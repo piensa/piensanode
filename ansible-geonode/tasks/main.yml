@@ -521,6 +521,8 @@
     name      : "{{ app_code_dir }}/HHypermap"
     virtualenv: "{{virtualenv_dir}}/{{app_name}}"
     extra_args: '-e'
+  sudo: yes
+  sudo_user: root
   tags: app
 
 ################################################################################

@@ -1,75 +1,26 @@
-{{ project_name|title }}
-========================
+Piensanode
+===========
 
-You should write some docs, it's good for the soul.
+0. Git clone this repo to your local dev box:
 
-Installation
-------------
-
-Install the native dependencies for your platform.
-
-Install virtualenv and virtualenvwrapper, Create a local virtual environment for your project and install Django into it.::
-
-    $ mkvirtualenv my_geonode
-    $ pip install Django==1.8.12
-
-Create a new template based on the geonode example project.::
+    git clone https://github.com/piensa/piensanode.git
     
-    $ django-admin.py startproject my_geonode --template=https://github.com/GeoNode/geonode-project/archive/master.zip -epy,rst,yml -n Vagrantfile
+1. Have a HHyperMap checkout in the parent folder where this is checked out.
 
-.. note:: You should NOT use the name geonode for your project as it will conflict with the default geonode package name.
+    git clone https://github.com/cga-harvard/HHypermap.git -b registry
+    
+2. Install Vagrant and Ansible (2.0+)
 
-Install the dependencies for your geonode project into your local virtual environment::
+    vagrant up
 
-    $ pip install -e my_geonode
+3. If you are working on HHyperMap, install it from source inside the virtual machine:
 
-Install and Configure GeoServer
+    vagrant ssh
+    source venvs/piensanode/bin/activate
+    pip install -e /code/HHyperMap
 
-.. note:: At this point, you should put your project under version control using Git or similar.
+4. Access the server on:
 
-Using ansible for Automated Deploys
------------------------------------
-
-In order to install for production on a remote machine or to a local VM for development, you will need to install ansible::
-
-     $ sudo pip install ansible
-
-Note: It is advisable to install ansible system wide using sudo
-
-Next, you will need to install the ansible role for geonode::
-
-     $ ansible-galaxy install ortelius.geonode
-
-Setting up a vagrant box
--------------------------
-
-Setup VirtualBox and install vagrant, then setup your virtual machine with::
-
-    $ vagrant up
-
-Note: the vagrant installation uses Ansible, so you will need to follow the steps in the previous section.
-
-Usage in production
--------------------
-
-Update /etc/ansible/hosts to include your webservers host or dns entry::
-
-    [webservers]
-    ###.###.###.###
-
-Then you can run the playbook to install the {{ project_name }}  project::
-
-    $ ansible-playbook playbook.yml
-
-Basic Usage
------------
-
-Setup the database::
-
-    $ python manage.py syncdb
-
-.. note:: You will be asked to provide credentials for the superuser account.
-
-Start the development server::
-
-    $ python manage.py runserver
+    http://192.168.56.151/
+    
+    
