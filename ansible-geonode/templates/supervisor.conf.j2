@@ -1,0 +1,45 @@
+[program:{{ app_name }}]
+command=/usr/local/bin/uwsgi
+	--master
+	--die-on-term
+	--uid=www-data
+	--gid=www-data
+	--socket=/tmp/{{ app_name }}.sock
+	--chmod-socket=666
+	--chdir={{ app_code_dir }}/{{ app_name }}
+	--home={{ virtualenv_dir }}/{{ app_name }}
+	--module=django.core.wsgi:get_wsgi_application()
+	--env=DJANGO_SETTINGS_MODULE={{ app_name }}.settings
+	--virtualenv={{ virtualenv_dir }}/{{ app_name }}
+	--pidfile=/tmp/{{ app_name }}.pid
+	--vacuum
+	--py-autoreload=1	
+stdout_logfile={{ logs_dir }}/{{ app_name }}.log
+stderr_logfile={{ logs_dir }}/{{ app_name }}.log
+autostart=true
+autorestart=true
+redirect_stderr=true
+priority=1
+
+[program:elasticsearch]
+command=/usr/share/elasticsearch/bin/elasticsearch
+autostart=true
+autorestart=true
+stdout_logfile={{ logs_dir }}/elasticsearch.log
+stderr_logfile={{ logs_dir }}/elasticsearch.log
+user=elasticsearch
+redirect_stderr=true
+priority=1
+
+[program:{{ app_name }}-celery]
+command={{ virtualenv_dir }}/{{ app_name }}/bin/celery worker
+	--app={{ app_name }}.celeryapp:app
+	--beat
+	--loglevel=DEBUG 
+	--concurrency={{celery_num_workers}}
+directory={{ app_code_dir }}/{{ app_name }}
+stdout_logfile={{ logs_dir }}/{{ app_name }}-celery.log
+stderr_logfile={{ logs_dir }}/{{ app_name }}-celery.log
+redirect_stderr=true
+user={{ deploy_user }}
+priority=2

@@ -1,8 +1,553 @@
 ---
-# Tasks file for geonode
+################################################################################
+## Common - You know, common stuff
+################################################################################
 
-- include: postgres_postgis.yml
-- include: geoserver.yml
+- name: Install needed packages using apt
+  apt: 
+    name: "{{ item }}" 
+    update_cache: yes 
+    cache_valid_time: 7200
+  with_items:
+    - build-essential
+    - gdal-bin
+    - gettext
+    - git
+    - libgeos-dev
+    - libjpeg-dev
+    - libpng-dev
+    - libpq-dev
+    - libproj-dev
+    - libxml2-dev
+    - libxslt-dev
+    - libxslt1-dev
+    - postgresql-client
+    - postgresql-client-common
+    - python-dev
+    - python-gdal
+    - python-httplib2
+    - python-imaging
+    - python-lxml
+    - python-nose
+    - python-pip
+    - python-psycopg2
+    - python-pyproj
+    - python-shapely
+    - python-software-properties
+    - python-virtualenv
+    - rabbitmq-server
+    - supervisor
+    - unzip
+    - zip
+    - zlib1g-dev
+  sudo: yes
+  tags: apt
+
+################################################################################
+## Postgresql
+################################################################################
+
+- name: configure the PostgreSQL APT key
+  apt_key: 
+    url  : "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+    state: present
+  sudo: yes
+  tags: postgres
+
+- name: configure the PostgreSQL APT repositories
+  apt_repository: 
+    repo : "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
+    state: present
+  sudo: yes
+  tags: postgres
+
+- name: install Postgres-PostGIS
+  apt: 
+    pkg  : "{{ item }}" 
+    state: present
+  with_items:
+    - postgresql-9.4
+    - postgresql-contrib-9.4
+    - postgresql-9.4-postgis-2.1
+  sudo: yes
+  tags: postgres
+
+- name: check if postgres cluster is created already
+  shell: "psql postgres -c 'select 1'"
+  register: db_setup
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: setup postgres cluster to default to utf8
+  # if the dbs haven't been created yet, we want to destroy the whole db
+  # cluster and recreate it with proper utf8 support. From http://ph.ly/pg
+  sudo: yes
+  shell: "pg_createcluster --start -e UTF-8 9.4 main"
+  when: db_setup.rc != 0 # only do this if the dbs haven't been created yet
+  tags: postgres
+
+- name: create database user
+  postgresql_user: 
+    name           : "{{ db_user }}"
+    password       : "{{ db_password }}"
+    role_attr_flags: LOGIN,CREATEDB,NOSUPERUSER
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: write the pg_hba.conf file 
+  template: 
+    src : pg_hba.conf 
+    dest: "/etc/postgresql/9.4/main/pg_hba.conf"
+  sudo: yes
+  tags: postgres
+
+- name: create {{db_metadata_instance}} db
+  postgresql_db: 
+    name      : "{{ db_metadata_instance }}"
+    encoding  : 'UTF-8'
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype  : 'en_US.UTF-8'
+    owner     : "{{ db_user }}"
+    template  : 'template0'
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: add postgis to the {{ db_metadata_instance }} db
+  postgresql_ext: 
+    name: postgis
+    db  : "{{ db_metadata_instance }}"
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: create {{ db_data_instance }} db
+  postgresql_db: 
+    name      : "{{ db_data_instance }}"
+    encoding  : "UTF-8"
+    lc_collate: "en_US.UTF-8"
+    lc_ctype  : "en_US.UTF-8"
+    owner     : "{{db_user}}"
+    template  : "template0"
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: add postgis to the {{ db_data_instance }} db
+  postgresql_ext: 
+    name: postgis
+    db  : "{{ db_data_instance }}"
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+
+- name: Start PostgreSQL and enable at boot
+  service: 
+    name   : postgresql
+    enabled: yes
+    state  : started
+
+################################################################################
+## Geoserver 
+################################################################################
+
+- name: install Tomcat 
+  apt: 
+    pkg             : tomcat7
+    state           : present 
+    update_cache    : yes 
+    cache_valid_time: 7200
+  sudo: yes
   when: geoserver
-- include: web.yml
-- include: celery.yml
+  tags: geoserver
+
+- name: Download Geoserver (remote)
+  sudo: yes
+  get_url:
+    dest   : /var/lib/tomcat7/webapps/geoserver.war
+    url    : "{{ geoserver_url }}"
+    owner  : 0
+    group  : 0
+    mode   : 0644
+    timeout: 1800
+  when: geoserver
+  tags: geoserver
+
+- name: wait for geoserver to be up
+  shell: curl --head --silent http://localhost:8080/geoserver/web/
+  register: result
+  until: result.stdout.find('200 OK') != -1
+  retries: 5 
+  delay: 60
+  when: geoserver
+  tags: geoserver
+
+- name: Copy create_db_store script in place
+  template: 
+    src : create_db_store.py.j2
+    dest: "{{ app_code_dir }}/{{ app_name }}/create_db_store.py"
+  when: geoserver
+  tags: geoserver
+
+- name: create the db datastore in geoserver
+  command: "{{virtualenv_dir}}/{{app_name}}/bin/python {{ app_code_dir}}/{{app_name}}/create_db_store.py"
+  when: geoserver
+  tags: geoserver
+
+
+################################################################################
+## Elasticsearch
+################################################################################
+
+- name: Install add-apt-repostory
+  apt:
+    name : software-properties-common 
+    state: latest
+  sudo: yes
+  tags: elasticsearch
+
+- name: Add Oracle Java Repository
+  apt_repository:
+    repo: "ppa:webupd8team/java"
+  sudo: yes
+  tags: elasticsearch
+
+- name: Accept Java 8 License
+  debconf:
+    name    : "oracle-java8-installer"
+    question: "shared/accepted-oracle-license-v1-1"
+    value   : "true"
+    vtype   : "select"
+  sudo: yes
+  tags: elasticsearch
+
+- name: Install Oracle Java 8
+  apt:
+    name : "{{ item }}"
+    state: latest
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+  sudo: yes
+  tags: elasticsearch
+
+- name: Install elasticsearch apt key
+  apt_key: 
+    url  : "https://packages.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+  sudo: yes
+  tags: elasticsearch
+
+- name: Add elasticsearch repository
+  apt_repository:
+    repo : "deb http://packages.elastic.co/elasticsearch/2.x/debian stable main"
+    state: present
+  sudo: yes
+  tags: elasticsearch
+
+- name: Install elasticsearch
+  apt:
+    name : elasticsearch
+    state: present
+  sudo: yes
+  tags: elasticsearch
+
+- name: Configure elasticsearch
+  lineinfile:
+    dest  : "/etc/elasticsearch/elasticsearch.yml"
+    regexp: "{{ item.regexp }}"
+    line  : "{{ item.line }}"
+    state : present
+  with_items:
+  - { regexp: "^network.host", line: "network.host: localhost" }
+  - { regexp: "^http.port", line: "http.port: 9200" }
+  - { regexp: "^script.inline", line: "script.inline: on"}
+  - { regexp: "^script.indexed", line: "script.indexed: on"}
+  sudo: yes
+  tags: elasticsearch
+
+- name: Set elasticsearch defaults
+  lineinfile:
+    dest  : /etc/default/elasticsearch
+    regexp: "{{ item.regexp }}"
+    line  : "{{ item.line }}"
+    state : present
+  with_items:
+    - { regexp: "^ES_HOME=", line: "ES_HOME=/usr/share/elasticsearch" }
+    - { regexp: "^DATA_DIR=", line: "DATA_DIR=/var/lib/elasticsearch" }
+    - { regexp: "^PID_DIR=", line: "PID_DIR=/var/run/elasticsearch" }
+    - { regexp: "^ES_RESTART_ON_UPGRADE=", line: "ES_RESTART_ON_UPGRADE=true" }
+    - { regexp: "^ES_USER=", line: "ES_USER=elasticsearch" }
+    - { regexp: "^ES_GROUP=", line: "ES_GROUP=elasticsearch" }
+    - { regexp: "^ES_STARTUP_SLEEP_TIME=", line: "ES_STARTUP_SLEEP_TIME=5" }
+    - { regexp: "^ES_HEAP_SIZE=", line: "ES_HEAP_SIZE=500m" }
+  sudo: yes
+  tags: elasticsearch
+
+- name: update group gid
+  group:
+    name : elasticsearch
+    gid  : "{{ es_gid }}"
+    state: present
+  when: es_gid
+  tags: elasticsearch
+
+- name: update user uid and gid
+  user:
+    name : elasticsearch 
+    uid  : "{{ es_uid }}" 
+    group: elasticsearch 
+    state: present
+  when: es_uid
+  tags: elasticsearch
+
+- name: limits.conf tuning
+  lineinfile:
+    dest: /etc/security/limits.conf
+    line: "{{ item }}"
+  with_items:
+    - "elasticsearch soft nofile 32000"
+    - "elasticsearch hard nofile 32000"
+  tags: elasticsearch
+  notify: Restart elasticsearch
+
+- name: Fetch Kibana
+  get_url:
+    url: "https://download.elastic.co/kibana/kibana/kibana_4.5.3_amd64.deb"
+    dest: "/tmp/"
+  tags: elasticsearch
+
+- name: Install Kibana
+  apt:
+    deb: "/tmp/kibana_4.5.3_amd64.deb"
+  sudo: yes  
+  tags: elasticsearch
+
+- name: Kibana settings
+  lineinfile:
+    dest  : "/opt/kibana/config/kibana.yml"
+    regexp: "^elasticsearch.url"
+    line  : 'elasticsearch.url: "http://localhost:9200"'
+    state : present
+  tags: elasticsearch
+
+################################################################################
+## Nginx
+################################################################################
+
+- name: add repository for latest nginx stable
+  apt_repository: 
+    repo: 'ppa:nginx/stable'
+  sudo: yes
+  tags: nginx
+
+- name: ensure nginx is installed
+  apt: 
+    name            : nginx 
+    update_cache    : yes 
+    cache_valid_time: 7200
+  sudo: yes
+  tags: nginx
+
+- name: write nginx configuration for multiple subdomains
+  template: 
+    src: nginx.conf.j2 
+    dest: "/etc/nginx/sites-available/default"
+  sudo: yes
+  tags: nginx
+  notify: Restart nginx
+
+################################################################################
+## uWSGI
+################################################################################
+
+- name: add uwsgi from pypi
+  pip: 
+    name: uwsgi
+  sudo: yes
+  tags: uwsgi
+
+- name: create /etc/uwsgi to place apps
+  file: 
+    path : /etc/uwsgi 
+    owner: "{{ deploy_user }}" 
+    group: "{{ deploy_user }}" 
+    state: directory 
+    mode : 0755
+  sudo: yes
+  tags: uwsgi
+
+################################################################################
+## Application
+################################################################################
+
+- name: install known_hosts file to access GitHub
+  copy: 
+    src : known_hosts
+    dest: "{{ssh_dir }}/known_hosts"
+  tags: app
+
+- name: checkout latest web app code
+  git: 
+    repo   : "{{ code_repository }}"
+    version: "{{ git_branch }}"
+    dest   : "{{ app_code_dir }}/{{ app_name }}"
+  when: git_fetch
+  tags: app
+
+- name: copy the local_settings.py file in place
+  template: 
+    src : local_settings.py.j2
+    dest: "{{ app_code_dir }}/{{ app_name }}/{{ app_name }}/local_settings.py"
+  tags: app
+
+- name: check if virtualenv already exists
+  stat: 
+    path: "{{ virtualenv_dir }}/{{ app_name }}"
+  register: venv_dir
+  tags: app
+
+- name: create virtualenv for Django web application
+  shell: virtualenv --system-site-packages {{ virtualenv_dir }}/{{ app_name }}
+  when: venv_dir.stat.isdir is not defined
+  tags: app
+
+- name: Give user permissions to virtualenv folder
+  file:
+    path : "{{ virtualenv_dir }}/{{ app_name }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    recurse: yes
+  when: venv_dir.stat.isdir is not defined
+  tags: app
+
+- name: check if requirements file exists
+  stat: 
+    path: "{{ app_code_dir }}/{{ app_name }}/requirements.txt"
+  register: requirements_file
+  tags: app
+
+- name: install web application dependencies listed in requirements.txt
+  pip: 
+    requirements: "{{ app_code_dir }}/{{app_name}}/requirements.txt"
+    virtualenv  : "{{ virtualenv_dir }}/{{ app_name }}"
+  when: requirements_file.stat.exists
+  tags: app
+
+- name: install web application
+  pip: 
+    name      : "file:///{{app_code_dir}}/{{app_name}}"
+    virtualenv: "{{virtualenv_dir}}/{{app_name}}"
+    extra_args: '-e'
+  tags: app
+
+- name: create directories for Django app if it does not exist
+  file: 
+    path : "{{ item }}"
+    state: directory
+    mode : 0777
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+  sudo: yes
+  with_items:
+    - "/var/www/{{app_name}}/static"
+    - "/var/www/{{app_name}}/uploaded"
+    - "/var/www/{{app_name}}/uploaded/layers/"
+    - "/var/www/{{app_name}}/uploaded/thumbs/"
+  tags: app
+
+- name: Django collectstatic
+  django_manage: 
+    command   : collectstatic
+    app_path  : "{{ app_code_dir }}/{{ app_name }}"
+    virtualenv: "{{ virtualenv_dir }}/{{ app_name }}"
+    settings  : "{{ main_module }}.settings"
+  tags: app
+
+- name: Django makemigrations
+  django_manage:
+    command   : makemigrations
+    app_path  : "{{ app_code_dir }}/{{ app_name }}"
+    virtualenv: "{{ virtualenv_dir }}/{{ app_name }}"
+    settings  : "{{ main_module }}.settings"
+  tags: app
+
+- name: Django migrate account
+  django_manage:
+    command   : "migrate account"
+    app_path  : "{{ app_code_dir }}/{{ app_name }}"
+    virtualenv: "{{ virtualenv_dir }}/{{ app_name }}"
+    settings  : "{{ main_module }}.settings"
+  tags: app
+
+- name: Django migrate
+  django_manage:
+    command   : migrate
+    app_path  : "{{ app_code_dir }}/{{ app_name }}"
+    virtualenv: "{{ virtualenv_dir }}/{{ app_name }}"
+    settings  : "{{ main_module }}.settings"
+  tags: app
+
+- name: Copy initial fixtures in place 
+  template: 
+    src : fixtures.json.j2 
+    dest: "{{ app_code_dir }}/{{ app_name }}/fixtures.json"
+  tags: app
+ 
+- name: Load the fixtures (Create the superuser)
+  django_manage: 
+    command   : "loaddata" 
+    app_path  : "{{ app_code_dir }}/{{ app_name }}"
+    virtualenv: "{{ virtualenv_dir }}/{{ app_name }}"
+    settings  : "{{ main_module }}.settings"
+    fixtures  : "{{ app_code_dir }}/{{ app_name }}/fixtures.json"
+  tags: app
+
+- name: Setup bashrc
+  blockinfile:
+    dest : /home/{{deploy_user}}/.bash_aliases
+    create: yes
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    block: |
+      source /home/{{deploy_user}}/venvs/{{ app_name }}/bin/activate
+      cd {{app_code_dir}}/{{app_name}}
+      alias celerylog='tail -f /var/log/piensanode/piensanode-celery.log'
+  tags: app
+
+- name: install HHypermap
+  pip: 
+    name      : "{{ app_code_dir }}/HHypermap"
+    virtualenv: "{{virtualenv_dir}}/{{app_name}}"
+    extra_args: '-e'
+  tags: app
+
+################################################################################
+## Supervisor - Run everything on startup
+################################################################################
+
+- name: Create the logs directory
+  file:
+    path : "{{ logs_dir }}"
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: 0774
+    state: directory
+  sudo: yes
+  tags: supervisor
+
+- name: Create the supevisor script file
+  template:
+    src : supervisor.conf.j2
+    dest: /etc/supervisor/conf.d/{{ app_name }}.conf
+  sudo: yes
+  tags: supervisor
+
+- name: Re-read the Supervisor config files
+  command: "supervisorctl reread && supervisorctl update"
+  tags: supervisor
+  notify: Restart supervisor
