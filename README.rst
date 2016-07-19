@@ -27,4 +27,9 @@ Piensanode
    
    * sudo service supervisor stop
    * sudo service supervisor start 
-   * supervisorctl (to check status services)      
+   * supervisorctl (to check status services)
+
+6. To run Kibana:
+
+    sudo kibana
+

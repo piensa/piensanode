@@ -334,6 +334,14 @@
     state : present
   tags: elasticsearch
 
+- name: Create kibana symlink
+  file:
+    src: "/opt/kibana/bin/kibana"
+    dest: "/usr/bin/kibana"
+    state: link
+  sudo: yes
+  tags: elasticsearch
+
 ################################################################################
 ## Nginx
 ################################################################################
