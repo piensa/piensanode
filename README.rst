@@ -33,3 +33,8 @@ Piensanode
 
     sudo kibana
 
+7. If you have problems indexing and it mentions  `aggregator_service_srs` do the following:
+   
+   python manage.py makemigrations
+   python manage.py migrate djcelery 0001 --fake
+   python manage.py migrate
