@@ -25,6 +25,6 @@ Piensanode
     
 5. If you get ERROR 502 on server, you should do the following steps:
    
-   sudo service supervisor stop
-   sudo service supervisor start 
-   supervisorctl (to check status services)      
+   * sudo service supervisor stop
+   * sudo service supervisor start 
+   * supervisorctl (to check status services)      
