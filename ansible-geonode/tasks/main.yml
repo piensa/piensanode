@@ -312,16 +312,18 @@
   tags: elasticsearch
   notify: Restart elasticsearch
 
-- name: Fetch Kibana
-  get_url:
-    url: "https://download.elastic.co/kibana/kibana/kibana_4.5.3_amd64.deb"
-    dest: "/tmp/"
+- name: Add kibana repository
+  apt_repository:
+    repo : "deb http://packages.elastic.co/kibana/4.5/debian stable main"
+    state: present
+  sudo: yes
   tags: elasticsearch
 
-- name: Install Kibana
+- name: Install kibana
   apt:
-    deb: "/tmp/kibana_4.5.3_amd64.deb"
-  sudo: yes  
+    name : kibana
+    state: present
+  sudo: yes
   tags: elasticsearch
 
 - name: Kibana settings
