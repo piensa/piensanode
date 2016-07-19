@@ -2,10 +2,6 @@ upstream elastic {
     server localhost:9200;
 }
 
-upstream django {
-    server localhost:8000;
-}
-
 server {
     listen      80;
     server_name {{ server_name }};
@@ -32,7 +28,8 @@ server {
     }
 
     location @wsgiapp {
-        proxy_pass http://django;
+	uwsgi_pass 127.0.0.1:8000;
+	include uwsgi_params;
     }
 
     location /geoserver/ {

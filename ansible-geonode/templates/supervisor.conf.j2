@@ -5,6 +5,7 @@ command=/usr/local/bin/uwsgi
 	--uid=www-data
 	--gid=www-data
         --socket=:8000
+        --buffer-size=32768
 	--chdir={{ app_code_dir }}/{{ app_name }}
 	--home={{ virtualenv_dir }}/{{ app_name }}
 	--module=django.core.wsgi:get_wsgi_application()
