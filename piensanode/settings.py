@@ -84,7 +84,7 @@ BROKER_URL = 'amqp://guest:guest@127.0.0.1:5672/'
 CELERYBEAT_SCHEDULE = {
     'Check All Services': {
         'task': 'hypermap.aggregator.tasks.check_all_services',
-        'schedule': timedelta(minutes=15)
+        'schedule': timedelta(minutes=1500)
     },
 }
 
