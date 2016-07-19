@@ -32,8 +32,7 @@ server {
     }
 
     location @wsgiapp {
-        uwsgi_pass  django;
-        include     /etc/nginx/uwsgi_params;
+        proxy_pass http://django;
     }
 
     location /geoserver/ {
