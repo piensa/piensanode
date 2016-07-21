@@ -399,6 +399,9 @@
     dest: "{{ssh_dir }}/known_hosts"
   tags: app
 
+- file: path={{ app_code_dir }} state=directory mode=0755 owner="{{deploy_user}}"
+  sudo: yes
+
 - name: checkout latest web app code
   git: 
     repo   : "{{ code_repository }}"
@@ -536,6 +539,7 @@
   sudo: yes
   sudo_user: root
   tags: app
+  when: git_fetch == False
 
 ################################################################################
 ## Supervisor - Run everything on startup
@@ -560,5 +564,6 @@
 
 - name: Re-read the Supervisor config files
   command: "supervisorctl reread && supervisorctl update"
-  tags: supervisor
   notify: Restart supervisor
+  sudo: yes
+  tags: supervisor
