@@ -334,6 +334,7 @@
     line  : 'elasticsearch.url: "http://localhost:9200"'
     state : present
   tags: elasticsearch
+  sudo: yes
 
 - name: Create kibana symlink
   file:
