@@ -105,6 +105,8 @@ DEBUG_LAYERS_NUMBER = False
 
 MAPPROXY_CONFIG = os.path.join(MEDIA_ROOT, 'mapproxy_config')
 
+import hypermap
+HYPERMAP_LOCATION = hypermap.__file__
 # pycsw settings
 REGISTRY_PYCSW = {
     'server': {
@@ -126,7 +128,7 @@ REGISTRY_PYCSW = {
     },
     'repository': {
         'source': 'HHypermap',
-        'mappings': os.path.join(os.path.dirname(__file__), '..', 'search', 'pycsw_local_mappings.py')
+        'mappings': os.path.join(os.path.dirname(HYPERMAP_LOCATION), 'search', 'pycsw_local_mappings.py')
     },
 }
 
