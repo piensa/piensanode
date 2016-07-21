@@ -310,6 +310,7 @@
     - "elasticsearch soft nofile 32000"
     - "elasticsearch hard nofile 32000"
   tags: elasticsearch
+  sudo: yes
   notify: Restart elasticsearch
 
 - name: Add kibana repository
