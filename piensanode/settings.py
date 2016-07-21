@@ -102,3 +102,60 @@ SKIP_CELERY_TASK = False
 
 DEBUG_SERVICES = False
 DEBUG_LAYERS_NUMBER = False
+
+MAPPROXY_CONFIG = os.path.join(MEDIA_ROOT, 'mapproxy_config')
+
+# pycsw settings
+REGISTRY_PYCSW = {
+    'server': {
+        # 'home': '.',
+        'url': '%s/search/csw' % SITE_URL.rstrip('/'),
+        'encoding': 'UTF-8',
+        'language': LANGUAGE_CODE,
+        'maxrecords': '10',
+        'pretty_print': 'true',
+        # 'domainquerytype': 'range',
+        'domaincounts': 'true',
+        'profiles': 'apiso'
+    },
+    'manager': {
+        # authentication/authorization is handled by Django
+        'transactions': 'true',
+        'allowed_ips': '*',
+        # 'csw_harvest_pagesize': '10',
+    },
+    'repository': {
+        'source': 'HHypermap',
+        'mappings': os.path.join(os.path.dirname(__file__), '..', 'search', 'pycsw_local_mappings.py')
+    },
+}
+
+REGISTRY_PYCSW['server']['url'] = SITE_URL.rstrip('/') + '/registry/search/csw'
+
+REGISTRY_PYCSW['metadata:main'] = {
+    'identification_title': 'Registry Catalogue',
+    'identification_abstract': 'Registry, a Harvard Hypermap project, is an application that manages ' \
+    'OWS, Esri REST, and other types of map service harvesting, and maintains uptime statistics for ' \
+    'services and layers.',
+    'identification_keywords': 'sdi,catalogue,discovery,metadata,registry,HHypermap',
+    'identification_keywords_type': 'theme',
+    'identification_fees': 'None',
+    'identification_accessconstraints': 'None',
+    'provider_name': 'Organization Name',
+    'provider_url': SITE_URL,
+    'contact_name': 'Lastname, Firstname',
+    'contact_position': 'Position Title',
+    'contact_address': 'Mailing Address',
+    'contact_city': 'City',
+    'contact_stateorprovince': 'Administrative Area',
+    'contact_postalcode': 'Zip or Postal Code',
+    'contact_country': 'Country',
+    'contact_phone': '+xx-xxx-xxx-xxxx',
+    'contact_fax': '+xx-xxx-xxx-xxxx',
+    'contact_email': 'Email Address',
+    'contact_url': 'Contact URL',
+    'contact_hours': 'Hours of Service',
+    'contact_instructions': 'During hours of service. Off on weekends.',
+    'contact_role': 'Point of Contact'
+}
+TAGGIT_CASE_INSENSITIVE = True
