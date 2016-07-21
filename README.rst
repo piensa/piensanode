@@ -17,7 +17,8 @@ Piensanode
 
     http://192.168.56.151/
     
-==Troubleshoting==
+Troubleshoting
+===============
     
 4. If you get ERROR 502 on server, you should do the following steps:
    
