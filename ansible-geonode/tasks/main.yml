@@ -311,7 +311,11 @@
     - "elasticsearch hard nofile 32000"
   tags: elasticsearch
   sudo: yes
+
+- name: Restart service elasticsearch
+  command: /bin/true
   notify: Restart elasticsearch
+  tags: elasticsearch
 
 - name: Add kibana repository
   apt_repository:
@@ -392,6 +396,15 @@
 ################################################################################
 ## Application
 ################################################################################
+
+- name: Give user permissions to development folder
+  file:
+    path : "{{ app_code_dir }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    recurse: yes
+  tags: app
 
 - name: install known_hosts file to access GitHub
   copy: 
@@ -531,13 +544,25 @@
       alias celerylog='tail -f /var/log/piensanode/piensanode-celery.log'
   tags: app
 
-- name: install HHypermap
+- name: Check if registry directory exists
+  stat:
+    path: "{{ app_code_dir }}/HHypermap"
+  register: registry_dir
+  tags: app
+
+- name: Checkout latest registry directory
+  git:
+    repo   : "https://www.github.com/cga-harvard/hhypermap.git"
+    version: "registry"
+    dest   : "{{ app_code_dir }}/HHypermap"
+  when: registry_dir.stat.isdir is not defined
+  tags: app
+
+- name: install Registry
   pip: 
     name      : "{{ app_code_dir }}/HHypermap"
     virtualenv: "{{virtualenv_dir}}/{{app_name}}"
     extra_args: '-e'
-  sudo: yes
-  sudo_user: root
   tags: app
   when: git_fetch == False
 
