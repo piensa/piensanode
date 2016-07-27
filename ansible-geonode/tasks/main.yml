@@ -396,16 +396,6 @@
 ################################################################################
 ## Application
 ################################################################################
-
-- name: Give user permissions to development folder
-  file:
-    path : "{{ app_code_dir }}"
-    state: directory
-    owner: "{{ deploy_user }}"
-    group: "{{ deploy_user }}"
-    recurse: yes
-  tags: app
-
 - name: install known_hosts file to access GitHub
   copy: 
     src : known_hosts
@@ -422,12 +412,24 @@
     dest   : "{{ app_code_dir }}/{{ app_name }}"
   when: git_fetch
   tags: app
+  sudo: yes
 
 - name: copy the local_settings.py file in place
   template: 
     src : local_settings.py.j2
     dest: "{{ app_code_dir }}/{{ app_name }}/{{ app_name }}/local_settings.py"
   tags: app
+  sudo: yes
+
+- name: Give user permissions to development folder
+  file:
+    path : "{{ app_code_dir }}/{{ app_name }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    recurse: yes
+  tags: app
+  sudo: yes
 
 - name: check if virtualenv already exists
   stat: 
