@@ -161,3 +161,5 @@ REGISTRY_PYCSW['metadata:main'] = {
     'contact_role': 'Point of Contact'
 }
 TAGGIT_CASE_INSENSITIVE = True
+
+FILE_CACHE_DIRECTORY = '/tmp/mapproxy/'
